@@ -1,0 +1,7 @@
+[build]
+command = "yarn build"
+publish = "dist"
+
+[template.environment]
+VUE_APP_SOCKET_URI = "Socket.IO Server URI (with https://)"
+FONTAWESOME_NPM_AUTH_TOKEN = "Font Awesome Pro Auth Token"
