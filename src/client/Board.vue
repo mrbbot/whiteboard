@@ -22,34 +22,34 @@
         icon="pen"
         title="Pen"
         swap-colours
-        :colour="selectedColourHex"
+        :colour="selectedColourRGB"
         :selected="!eraser"
         @click.native="eraser = false"
       />
       <CircleButton
         icon="eraser"
         title="Rubber"
-        :colour="selectedColourHex"
+        :colour="selectedColourRGB"
         :selected="eraser"
         @click.native="eraser = true"
       />
       <CircleButton
         icon="trash"
         title="Clear"
-        :colour="selectedColourHex"
+        :colour="selectedColourRGB"
         @click.native="clear"
       />
       <CircleButton
         icon="hand-pointer"
         title="Enable Touch"
-        :colour="selectedColourHex"
+        :colour="selectedColourRGB"
         :selected="touchEnabled"
         @click.native="touchEnabled = !touchEnabled"
       />
       <CircleButton
         icon="cloud-upload-alt"
         title="Upload Image"
-        :colour="selectedColourHex"
+        :colour="selectedColourRGB"
         @click.native="openImageFileDialog"
       />
       <CircleButton
@@ -57,7 +57,7 @@
         icon="camera"
         title="Save Screenshot"
         swap-colours
-        :colour="selectedColourHex"
+        :colour="selectedColourRGB"
         @click.native="saveScreenshot"
       />
     </div>
@@ -65,17 +65,17 @@
       <!--suppress HtmlFormInputWithoutLabel -->
       <input step="4" min="4" max="48" type="range" v-model="rawSize" />
       <CircleColour
-        :colour="selectedColourHex"
+        :colour="selectedColourRGB"
         :style="{ transform: 'scale(' + (size / 48) * canvasScale + ')' }"
       />
     </div>
     <div class="overlay top right column">
       <CircleColour
-        v-for="(colour, i) in colours"
+        v-for="colour in colours"
         :key="colour"
-        :colour="colour"
-        :selected="selectedColour === i"
-        @click.native="selectColour(i)"
+        :colour="colourToRGB(colour)"
+        :selected="selectedColour === colour"
+        @click.native="selectColour(colour)"
       />
     </div>
   </Drop>
@@ -85,7 +85,7 @@
 import { Drop } from "vue-drag-drop";
 import BoardCanvas from "./components/BoardCanvas";
 import CircleColour from "./components/CircleColour";
-import { canvasSize, colours } from "../common/drawing";
+import { canvasSize, colourToRGB } from "../common/drawing";
 import CircleButton from "./components/CircleButton";
 import { DrawEvent } from "../common/proto";
 import io from "socket.io-client";
@@ -97,6 +97,8 @@ const socketUri =
     ? "http://" + window.location.hostname + ":9090"
     : process.env.VUE_APP_SOCKET_URI;
 
+const colours = [0xe91e63, 0x2196f3, 0x4caf50];
+
 export default {
   name: "board",
   components: { Drop, CircleButton, CircleColour, BoardCanvas },
@@ -105,14 +107,14 @@ export default {
       eraser: false,
       touchEnabled: true,
       rawSize: "20",
-      selectedColour: 0,
+      selectedColour: colours[0],
       colours,
       rect: null
     };
   },
   computed: {
-    selectedColourHex() {
-      return colours[this.selectedColour];
+    selectedColourRGB() {
+      return colourToRGB(this.selectedColour);
     },
     size() {
       return parseInt(this.rawSize);
@@ -150,6 +152,7 @@ export default {
     this.socket.disconnect();
   },
   methods: {
+    colourToRGB,
     selectColour(colour) {
       this.eraser = false;
       this.selectedColour = colour;

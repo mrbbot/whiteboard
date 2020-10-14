@@ -1,15 +1,19 @@
 const canvasSize = 2000;
 const maxFitImageSize = canvasSize / 2;
-const colours = ["#E91E63", "#2196F3", "#4CAF50"];
 
 function setup(ctx) {
   ctx.lineCap = "round";
   clear(ctx);
 }
 
+function colourToRGB(colour) {
+  return `rgb(${(colour & 0xff0000) >> 16},${(colour & 0x00ff00) >>
+    8},${colour & 0x0000ff})`;
+}
+
 function handleDrawEvent(ctx, e) {
   ctx.lineWidth = e.thickness;
-  ctx.strokeStyle = e.colour === -1 ? "#FFFFFF" : colours[e.colour];
+  ctx.strokeStyle = e.colour === -1 ? "#ffffff" : colourToRGB(e.colour);
   ctx.beginPath();
   ctx.moveTo(e.x1, e.y1);
   ctx.lineTo(e.x2, e.y2);
@@ -37,14 +41,14 @@ function drawImage(ctx, img, fit = false) {
 }
 
 function clear(ctx) {
-  ctx.fillStyle = "#FFFFFF";
+  ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, canvasSize, canvasSize);
 }
 
 module.exports = {
   canvasSize,
-  colours,
   setup,
+  colourToRGB,
   handleDrawEvent,
   drawImage,
   clear
