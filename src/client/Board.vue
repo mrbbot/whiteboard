@@ -66,10 +66,10 @@
       <input step="4" min="4" max="48" type="range" v-model="rawSize" />
       <CircleColour
         :colour="selectedColourRGB"
-        :style="{ transform: 'scale(' + (size / 48) * canvasScale + ')' }"
+        :style="{ transform: 'scale(' + (size / 40) * canvasScale + ')' }"
       />
     </div>
-    <div class="overlay top right column">
+    <div class="overlay top right two-column">
       <CircleColour
         v-for="colour in colours"
         :key="colour"
@@ -97,7 +97,20 @@ const socketUri =
     ? "http://" + window.location.hostname + ":9090"
     : process.env.VUE_APP_SOCKET_URI;
 
-const colours = [0xe91e63, 0x2196f3, 0x4caf50];
+const colours = [
+  0xf44336,
+  0xff5722,
+  0xffc107,
+  0x4caf50,
+  0x2196f3,
+  0x3f51b5,
+  0x9c27b0,
+  0xe91e63,
+  0x795548,
+  0x9e9e9e,
+  0x000000,
+  0xffffff
+];
 
 export default {
   name: "board",
@@ -106,7 +119,7 @@ export default {
     return {
       eraser: false,
       touchEnabled: true,
-      rawSize: "20",
+      rawSize: "16",
       selectedColour: colours[0],
       colours,
       rect: null
@@ -236,6 +249,11 @@ export default {
       flex-direction: column
       > *:not(:last-child)
         margin-bottom: 1rem
+    &.two-column
+      display: grid
+      grid-gap: 0.75rem
+      grid-template-columns: repeat(2, min-content)
+      grid-auto-rows: min-content
     &.for-size
       height: 3rem
 </style>

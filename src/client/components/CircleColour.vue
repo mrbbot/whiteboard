@@ -1,7 +1,7 @@
 <template>
   <div
     class="circle-colour"
-    :class="{ selected }"
+    :class="{ selected, 'selected-invert': colour === 'rgb(0,0,0)' }"
     :style="{ backgroundColor: colour }"
   ></div>
 </template>
@@ -24,8 +24,8 @@ export default {
 
 <style lang="sass">
 .circle-colour
-  width: 3rem
-  height: 3rem
+  width: 2.5rem
+  height: 2.5rem
   border-radius: 1.5rem
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23)
   border: 0.5rem solid transparent
@@ -33,4 +33,6 @@ export default {
   transition: border-color 0.05s linear, transform 0.1s ease-out, background-color 0.05s linear
   &.selected
     border-color: rgba(0, 0, 0, 0.25)
+    &.selected-invert
+      border-color: rgba(255, 255, 255, 0.25)
 </style>
