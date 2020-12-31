@@ -6,6 +6,7 @@ import router from "./client/router";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
+  faSyncAlt,
   faPen,
   faHandPointer,
   faEraser,
@@ -15,6 +16,7 @@ import {
 } from "@fortawesome/pro-duotone-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 library.add(
+  faSyncAlt,
   faPen,
   faHandPointer,
   faEraser,

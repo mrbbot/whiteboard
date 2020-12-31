@@ -46,6 +46,32 @@ function canvasCount() {
   )}]`;
 }
 
+const timerSeconds = {};
+const timerTimeoutHandles = {};
+
+function timerReset(room, duration) {
+  clearTimeout(timerTimeoutHandles[room]);
+  timerSeconds[room] = duration;
+  timerTick(room);
+}
+
+function timerTick(room) {
+  timerTimeoutHandles[room] = setTimeout(() => {
+    timerSeconds[room]--;
+    if (timerSeconds[room] > 0) {
+      timerTick(room);
+    } else {
+      log(
+        { id: "server" },
+        "timerTick",
+        `Cleaning up timer for room ${room}...`
+      );
+      delete timerSeconds[room];
+      delete timerTimeoutHandles[room];
+    }
+  }, 1000);
+}
+
 io.on("connection", socket => {
   socket.on("join", (id, callback) => {
     log(socket, "join", `Joining ${id}...`);
@@ -67,6 +93,12 @@ io.on("connection", socket => {
     } else {
       log(socket, "join", `No canvas to send for room ${id}`);
       if (callback) callback(false);
+    }
+    if (id in timerSeconds) {
+      log(socket, "join", `Sending timer for room ${id}...`);
+      socket.emit("timer", timerSeconds[id]);
+    } else {
+      log(socket, "join", `No timer to send for room ${id}`);
     }
   });
 
@@ -154,6 +186,14 @@ io.on("connection", socket => {
           chalk.magenta(`Room ${room} cleared, deleted canvas ${canvasCount()}`)
         );
       }
+    })
+  );
+  socket.on(
+    "timer",
+    roomHandler((room, event) => {
+      log(socket, "timer", `Resetting ${room} timer to ${event}s...`);
+      socket.in(room).emit("timer", event);
+      timerReset(room, event);
     })
   );
   socket.on(

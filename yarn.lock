@@ -6894,6 +6894,11 @@ performance-now@^2.1.0:
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
   integrity sha1-Ywn04OX6kT7BxpMHrjZLSzd8nns=
 
+pic-word-gen@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/pic-word-gen/-/pic-word-gen-1.0.1.tgz#02a86bd8ea6e7b3f0a9b641fa62e3175d5e3f3aa"
+  integrity sha512-+Dy/Jo3kxRVdMICNqPGF0bS5ZnJEv5G+CsatnPqfZD8fRzSAm8vHW2QJ/AM/Ky3skbwxXnurpXWiwSqdSIqmfA==
+
 picomatch@^2.0.4, picomatch@^2.2.1:
   version "2.2.2"
   resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-2.2.2.tgz#21f333e9b6b8eaff02468f5146ea406d345f4dad"

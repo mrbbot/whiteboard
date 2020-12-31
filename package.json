@@ -24,6 +24,7 @@
     "file-saver": "^2.0.2",
     "lodash": "^4.17.15",
     "normalize.css": "^8.0.1",
+    "pic-word-gen": "^1.0.1",
     "protobufjs": "^6.9.0",
     "shortid": "^2.2.15",
     "socket.io": "^2.3.0",

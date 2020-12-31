@@ -17,6 +17,14 @@
       @pen="touchEnabled = false"
       @rect="rect = $event"
     />
+    <div class="overlay top left column">
+      <Timer
+        v-if="timerDuration > 0"
+        :seconds="timerSeconds"
+        @reset="resetTimer"
+      />
+      <Words v-if="wordDifficulty !== ''" :difficulty="wordDifficulty" />
+    </div>
     <div class="overlay bottom left row">
       <CircleButton
         icon="pen"
@@ -78,6 +86,9 @@
         @click.native="selectColour(colour)"
       />
     </div>
+    <div v-if="loading" class="overlay center">
+      <FontAwesomeIcon :icon="['fad', 'sync-alt']" fixed-width size="8x" spin />
+    </div>
   </Drop>
 </template>
 
@@ -91,6 +102,8 @@ import { DrawEvent } from "../common/proto";
 import io from "socket.io-client";
 import { bytesToBase64 } from "byte-base64";
 import { saveAs } from "file-saver";
+import Timer from "@/client/components/Timer";
+import Words from "@/client/components/Words";
 
 const socketUri =
   process.env.NODE_ENV === "development"
@@ -114,15 +127,24 @@ const colours = [
 
 export default {
   name: "board",
-  components: { Drop, CircleButton, CircleColour, BoardCanvas },
+  components: {
+    Words,
+    Drop,
+    CircleButton,
+    CircleColour,
+    BoardCanvas,
+    Timer
+  },
   data() {
     return {
+      loading: true,
       eraser: false,
       touchEnabled: true,
       rawSize: "16",
       selectedColour: colours[0],
       colours,
-      rect: null
+      rect: null,
+      timerSeconds: 0
     };
   },
   computed: {
@@ -137,6 +159,17 @@ export default {
     },
     enableScreenshots() {
       return !!HTMLCanvasElement.prototype.toBlob;
+    },
+    timerDuration() {
+      return parseInt(this.$route.query.timer?.toString()) || -1;
+    },
+    wordDifficulty() {
+      const difficulty = this.$route.query.words;
+      return difficulty !== "easy" &&
+        difficulty !== "medium" &&
+        difficulty !== "hard"
+        ? ""
+        : difficulty;
     }
   },
   mounted() {
@@ -150,16 +183,16 @@ export default {
             "data:image/png;base64," +
             bytesToBase64(new Uint8Array(initialData));
         }
+        this.loading = false;
       });
     });
     this.socket.on("draw", e => {
       const drawEvent = DrawEvent.decode(new Uint8Array(e));
       this.$refs.canvas.handleDrawEvent(drawEvent);
     });
-    this.socket.on("image", e => {
-      this.drawImage(e);
-    });
+    this.socket.on("image", e => this.drawImage(e));
     this.socket.on("clear", () => this.$refs.canvas.clear());
+    this.socket.on("timer", e => this.handleTimerReset(e));
   },
   beforeDestroy() {
     this.socket.disconnect();
@@ -210,6 +243,21 @@ export default {
       this.$refs.canvas
         .toBlob()
         .then(blob => saveAs(blob, `whiteboard-${this.$route.params.id}.png`));
+    },
+    resetTimer() {
+      this.handleTimerReset(this.timerDuration);
+      this.socket.emit("timer", this.timerDuration);
+    },
+    handleTimerReset(duration) {
+      clearTimeout(this.timerTimeout);
+      this.timerSeconds = duration;
+      this.handleTimerTick();
+    },
+    handleTimerTick() {
+      this.timerTimeout = setTimeout(() => {
+        this.timerSeconds--;
+        if (this.timerSeconds > 0) this.handleTimerTick();
+      }, 1000);
     }
   }
 };
@@ -230,9 +278,6 @@ export default {
   .overlay
     position: fixed
     z-index: 10
-    display: flex
-    align-items: center
-    justify-content: center
     &.top
       top: 1rem
     &.left
@@ -241,19 +286,34 @@ export default {
       bottom: 1rem
     &.right
       right: 1rem
-    &.row
-      flex-direction: row
-      > *:not(:last-child)
-        margin-right: 1rem
-    &.column
-      flex-direction: column
-      > *:not(:last-child)
-        margin-bottom: 1rem
-    &.two-column
-      display: grid
-      grid-gap: 0.75rem
-      grid-template-columns: repeat(2, min-content)
-      grid-auto-rows: min-content
+    &.center
+      top: 50%
+      left: 50%
+      transform: translate(-50%, -50%)
     &.for-size
       height: 3rem
+  .row, .column
+    display: flex
+    align-items: center
+    justify-content: center
+  .row
+    flex-direction: row
+    > *:not(:last-child)
+      margin-right: 1rem
+  .column
+    flex-direction: column
+    align-items: flex-start
+    > *:not(:last-child)
+      margin-bottom: 1rem
+  .two-column
+    display: grid
+    grid-gap: 0.75rem
+    grid-template-columns: repeat(2, min-content)
+    grid-auto-rows: min-content
+  .text
+    font-family: BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif
+    font-weight: 500
+    line-height: 1
+    margin: 0
+    font-size: 1.25rem
 </style>
