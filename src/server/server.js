@@ -34,8 +34,9 @@ function log(socket, event, ...message) {
   );
 }
 
+const deleteTimeoutHandles = {};
+
 const canvases = {};
-const canvasDeleteTimeoutHandles = {};
 
 function canvasCount() {
   const mem = process.memoryUsage();
@@ -75,10 +76,10 @@ function timerTick(room) {
 io.on("connection", socket => {
   socket.on("join", (id, callback) => {
     log(socket, "join", `Joining ${id}...`);
-    if (canvasDeleteTimeoutHandles[id]) {
+    if (deleteTimeoutHandles[id]) {
       log(socket, "join", `Canceling ${id} scheduled deletion...`);
-      clearTimeout(canvasDeleteTimeoutHandles[id]);
-      delete canvasDeleteTimeoutHandles[id];
+      clearTimeout(deleteTimeoutHandles[id]);
+      delete deleteTimeoutHandles[id];
     }
     socket.join(id);
     if (id in canvases) {
@@ -212,24 +213,27 @@ io.on("connection", socket => {
           log(
             socket,
             "disconnecting",
-            `Last client in room ${room} disconnected, scheduling canvas for deletion in ${canvasDeleteWaitSeconds} second(s)...`
+            `Last client in room ${room} disconnected, scheduling deletion in ${canvasDeleteWaitSeconds} second(s)...`
           );
-          if (canvasDeleteTimeoutHandles[room]) {
+          if (deleteTimeoutHandles[room]) {
             log(
               socket,
               "disconnecting",
               `Canceling ${room} scheduled deletion...`
             );
-            clearTimeout(canvasDeleteTimeoutHandles[room]);
-            delete canvasDeleteTimeoutHandles[room];
+            clearTimeout(deleteTimeoutHandles[room]);
+            delete deleteTimeoutHandles[room];
           }
-          canvasDeleteTimeoutHandles[room] = setTimeout(() => {
+          deleteTimeoutHandles[room] = setTimeout(() => {
             delete canvases[room];
+            clearTimeout(timerTimeoutHandles[room]);
+            delete timerSeconds[room];
+            delete timerTimeoutHandles[room];
             if (global.gc) global.gc();
             log(
               socket,
               "disconnecting",
-              chalk.magenta(`Deleted ${room}'s canvas ${canvasCount()}`)
+              chalk.magenta(`Deleted ${room}'s canvas & timer ${canvasCount()}`)
             );
           }, canvasDeleteWaitSeconds * 1000);
         }
