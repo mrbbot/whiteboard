@@ -6,7 +6,12 @@ const chalk = require("chalk");
 const bytes = require("bytes");
 const _isString = require("lodash/isString");
 const { createCanvas, loadImage } = require("canvas");
-const { handleDrawEvent, drawImage, setup } = require("../common/drawing");
+const {
+  canvasSize,
+  handleDrawEvent,
+  drawImage,
+  setup
+} = require("../common/drawing");
 const { DrawEvent } = require("../common/proto");
 
 app.use(cors());
@@ -113,8 +118,8 @@ io.on("connection", socket => {
 
   const ensureCanvas = room => {
     if (!(room in canvases)) {
-      const canvas = createCanvas(2000, 2000);
-      const ctx = canvas.getContext("2d");
+      const canvas = createCanvas(canvasSize, canvasSize);
+      const ctx = canvas.getContext("2d", { alpha: false });
       setup(ctx);
       canvases[room] = { canvas, ctx };
       log(

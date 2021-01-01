@@ -30,7 +30,8 @@ router.beforeEach((to, from, next) => {
       name: "board",
       params: {
         id: shortid()
-      }
+      },
+      query: to.query
     });
   } else {
     next();

@@ -54,6 +54,7 @@ export default {
   justify-content: center
   background-color: transparent
   transition: background-color 0.05s linear
+  cursor: pointer
   &:hover
     background-color: rgba(0, 0, 0, 0.075)
   .fa-primary, .fa-secondary

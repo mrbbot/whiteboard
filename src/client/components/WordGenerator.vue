@@ -5,16 +5,13 @@
       title="Generate Word"
       @click.native="generate"
     />
-    <p class="text">{{ word }}</p>
+    <h4>{{ word }}</h4>
   </div>
 </template>
 
 <script>
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faRandom } from "@fortawesome/pro-duotone-svg-icons";
 import { generateWord } from "pic-word-gen";
 import CircleButton from "@/client/components/CircleButton";
-library.add(faRandom);
 
 export default {
   name: "words",

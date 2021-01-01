@@ -31,6 +31,7 @@ export default {
   border: 0.5rem solid transparent
   transform-origin: center
   transition: border-color 0.05s linear, transform 0.1s ease-out, background-color 0.05s linear
+  cursor: pointer
   &.selected
     border-color: rgba(0, 0, 0, 0.25)
     &.selected-invert

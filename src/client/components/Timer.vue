@@ -1,15 +1,12 @@
 <template>
   <div class="row">
     <CircleButton icon="undo" title="Reset Timer" @click.native="reset" />
-    <p class="text">{{ time }}</p>
+    <h4>{{ time }}</h4>
   </div>
 </template>
 
 <script>
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faUndo } from "@fortawesome/pro-duotone-svg-icons";
 import CircleButton from "@/client/components/CircleButton";
-library.add(faUndo);
 
 export default {
   name: "timer",

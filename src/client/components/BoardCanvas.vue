@@ -57,7 +57,7 @@ export default {
     this.handleResize();
     window.addEventListener("resize", this.handleResize);
     window.addEventListener("wheel", this.handleWheel);
-    this.ctx = this.$refs.canvas.getContext("2d");
+    this.ctx = this.$refs.canvas.getContext("2d", { alpha: false });
     setup(this.ctx);
   },
   beforeDestroy() {

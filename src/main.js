@@ -12,7 +12,10 @@ import {
   faEraser,
   faTrash,
   faCloudUploadAlt,
-  faCamera
+  faCamera,
+  faInfoCircle,
+  faUndo,
+  faRandom
 } from "@fortawesome/pro-duotone-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 library.add(
@@ -22,7 +25,10 @@ library.add(
   faEraser,
   faTrash,
   faCloudUploadAlt,
-  faCamera
+  faCamera,
+  faInfoCircle,
+  faUndo,
+  faRandom
 );
 Vue.component("FontAwesomeIcon", FontAwesomeIcon);
 
